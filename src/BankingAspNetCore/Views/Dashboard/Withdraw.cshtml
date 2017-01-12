@@ -1,0 +1,39 @@
+﻿@model BankingCore.Models.Account
+@{
+    ViewData["Title"] = "Withdraw";
+}
+<h2>@ViewData["Title"].</h2>
+<h3>@ViewData["Message"]</h3>
+
+<form asp-controller="Dashboard" asp-action="Withdraw" method="post" class="form-horizontal">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Account Number</label>
+        <div class="col-md-10">
+            <label>@Model.AccountNumber </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Current Balance</label>
+        <div class="col-md-10">
+            <label>@Model.Balance </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Amount</label>
+        <div class="col-md-10">
+            <input type="number" id="amount" class="form-control" name="amount" />
+            @*<input asp-for="Amount" class="form-control" type="number" />
+            <span asp-validation-for="Amount" class="text-danger"></span>*@
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+</form>

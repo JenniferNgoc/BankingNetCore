@@ -1,0 +1,47 @@
+﻿@model BankingAspNetCore.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+<h2>@ViewBag.Title.</h2>
+
+<form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal" role="form">
+    <h4>Create a new account.</h4>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Account Number</label>
+        <div class="col-md-10">
+            <input asp-for="AccountNumber" class="form-control" />
+            <span asp-validation-for="AccountNumber" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Password</label>
+        <div class="col-md-10">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Account Name</label>
+        <div class="col-md-10">
+            <input asp-for="AccountName" class="form-control" />
+            <span asp-validation-for="AccountName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 control-label">Balance</label>
+        <div class="col-md-10">
+            <input asp-for="Balance" class="form-control" type="number" />
+            <span asp-validation-for="Balance" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Register</button>
+        </div>
+    </div>
+</form>

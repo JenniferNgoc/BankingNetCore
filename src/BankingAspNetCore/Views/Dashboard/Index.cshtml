@@ -1,0 +1,50 @@
+﻿@model BankingCore.Models.Account
+@{
+    ViewData["Title"] = "User Transaction";
+}
+<h2>@ViewData["Title"].</h2>
+<h3>@ViewData["Message"]</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Transaction No.</th>
+            <th>Transaction Type</th>
+            <th>Amount</th>
+            <th>Start Balance</th>
+            <th>End Balance</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.UserTransactions)
+        {
+            <tr>
+                <td>@item.TransactionNo</td>
+                <td>
+                    @if (@item.Type == BankingCore.Models.TransactionType.Deposit)
+                    {
+                        <p>Deposit</p>
+                    }
+                    else
+                    {
+                        <p>Withdraw</p>
+                    }
+                </td>
+                <td>
+                    @if (@item.Type == BankingCore.Models.TransactionType.Deposit)
+                {
+                        <span>+</span>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                    @item.Amount.ToString("C")
+                </td>
+                <td>@item.StartBalance.ToString("C")</td>
+                <td>@item.EndBalance.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
