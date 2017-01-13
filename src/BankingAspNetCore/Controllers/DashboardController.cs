@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using BankingCore.Models;
 using BankingCore;
 using Microsoft.AspNetCore.Authorization;
-using BankingAspNetCore.ViewModels;
 
 namespace BankingAspNetCore.Controllers
 {

@@ -65,5 +65,18 @@ namespace Banking.UnitTest
             Assert.Equal(sumTotal, 800000);
             Assert.Equal(800000 - sumSourceBalaceAcc, balanLastAcc);
         }
+
+        private void Transfer(IUserTransactionRepository reponsitory, string fromAccNum, string toAccNum, decimal amount)
+        {
+            try
+            {
+                reponsitory.Transfer(fromAccNum, toAccNum, amount);
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -54,7 +54,7 @@ namespace BankingAspNetCore
             //services.AddSingleton<IConfiguration>(Configuration);
 
             services.AddTransient<IAccountRepository, AccountRepository>();
-            services.AddSingleton<IUserTransactionRepository, UserTransactionRepository>();
+            services.AddTransient<IUserTransactionRepository, UserTransactionRepository>();
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
@@ -78,7 +78,6 @@ namespace BankingAspNetCore
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
-                //ServeFromDirectory(app, env, "node_modules");
             }
             else
             {
@@ -103,7 +102,6 @@ namespace BankingAspNetCore
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            // dbContext.Database.Migrate();
             dbContext.Database.EnsureCreated();
 
         }

@@ -44,9 +44,8 @@ namespace BankingCore
 
         public async Task<bool> Authenticate(string accountNumber, string password)
         {
-            // var hashedPassword = AppUtils.HashPassword(password);
-            var hashedPassword = password;
-
+            var hashedPassword = StringExtensions.HashPassword(password);
+        
             var user = await context.Accounts.FirstOrDefaultAsync(usr =>
                             usr.AccountNumber == accountNumber &&
                             usr.Password == hashedPassword);
@@ -70,7 +69,7 @@ namespace BankingCore
                 {
                     AccountName = accountName,
                     AccountNumber = accountNumber,
-                    Password = password,
+                    Password = StringExtensions.HashPassword(password),
                     Balance = balance
                 };
 

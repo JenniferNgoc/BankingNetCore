@@ -3,12 +3,12 @@
   "testRunner": "xunit",
   "dependencies": {
     "BankingCore": "1.0.0-*",
-    "dotnet-test-xunit": "2.2.0-preview2-build1029",  
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "NETStandard.Library": "1.6.1",
     "xunit": "2.2.0-beta2-build3300",
     "xunit.runner.console": "2.1.0",
     "xunit.runner.visualstudio": "2.1.0",
-    "Microsoft.EntityFrameworkCore.InMemory": "1.0.2"
+    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0"
   },
 
   "frameworks": {
