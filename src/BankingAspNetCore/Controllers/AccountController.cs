@@ -14,9 +14,9 @@ namespace BankingAspNetCore.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AccountRepository accountRepo;
+        private readonly IAccountRepository accountRepo;
 
-        public AccountController(AccountRepository _accountRepo)
+        public AccountController(IAccountRepository _accountRepo)
         {
             accountRepo = _accountRepo;
         }

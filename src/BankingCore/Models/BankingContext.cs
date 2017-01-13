@@ -13,10 +13,15 @@ namespace BankingCore.Models
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Account>()
+                .Property(p => p.RowVersion).ValueGeneratedOnAddOrUpdate().IsConcurrencyToken();
+
             builder.Entity<UserTransaction>()
                .HasOne(p => p.Account)
                .WithMany(b => b.UserTransactions)
                .HasForeignKey(p => p.AccountId);
+
+            base.OnModelCreating(builder);
         }
     }
 }

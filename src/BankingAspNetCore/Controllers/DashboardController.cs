@@ -12,10 +12,10 @@ namespace BankingAspNetCore.Controllers
 {
     public class DashboardController : Controller
     {
-        private readonly AccountRepository accountRepo;
-        private readonly UserTransactionRepository userTransRepo;
+        private readonly IAccountRepository accountRepo;
+        private readonly IUserTransactionRepository userTransRepo;
 
-        public DashboardController(AccountRepository _accountRepo, UserTransactionRepository _userTransRepo)
+        public DashboardController(IAccountRepository _accountRepo, IUserTransactionRepository _userTransRepo)
         {
             accountRepo = _accountRepo;
             userTransRepo = _userTransRepo;
@@ -61,7 +61,7 @@ namespace BankingAspNetCore.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                var accInfo = await accountRepo.GetAccountInfo(User.GetAccNo());
+                var accInfo = accountRepo.GetAccountInfo(User.GetAccNo()).Result;
                 return View(accInfo);
             }
 

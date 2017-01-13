@@ -21,10 +21,12 @@ namespace Banking.UnitTest
             var userTransRepo = new UserTransactionRepository(new BankingContext(options));
 
             accountRepo.CreateAccount("123", "123", "123", 100000);
+            var aaa = accountRepo.GetAccountInfo("123").Result;
             accountRepo.CreateAccount("1234", "1234", "1234", 200000);
             accountRepo.CreateAccount("12345", "12345", "12345", 500000);
             accountRepo.CreateAccount("123456", "123456", "123456", 0);
-          
+            userTransRepo.Transfer("12345", "123456", 10000);
+
 
             Task task1 = Task.Run(() =>
             {
@@ -52,8 +54,7 @@ namespace Banking.UnitTest
                                     userTransRepo.Transfer("12345", "123456", index);
                                 });
             });
-            userTransRepo.Transfer("12345", "123456", 10000);
-
+           
             Task.WaitAll(task1, task2, task3);
 
             var sumTotal1 = new BankingContext(options).Accounts.ToList();

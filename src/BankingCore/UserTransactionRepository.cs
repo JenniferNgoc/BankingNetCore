@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BankingCore
 {
-    public class UserTransactionRepository
+    public class UserTransactionRepository : IUserTransactionRepository
     {
         private static readonly object _lockTransaction = new object();
 
@@ -20,90 +20,108 @@ namespace BankingCore
 
         public void Withdraw(string accountNumber, decimal amount)
         {
-            lock (_lockTransaction)
+            var account = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
+
+            if (account == null)
             {
-                var account = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
+                throw new Exception("Account number does not exist!");
+            }
 
-                if (account == null)
-                {
-                    throw new Exception("Account number does not exist!");
-                }
+            if (account.Balance < amount)
+            {
+                throw new Exception("Balance too low.");
+            }
+            var startBalance = account.Balance;
 
-                if (account.Balance < amount)
-                {
-                    throw new Exception("Balance too low.");
-                }
-                var startBalance = account.Balance;
+            account.Balance -= amount;
 
-                account.Balance -= amount;
+            var userTrans = new UserTransaction()
+            {
+                AccountId = account.Id,
+                StartBalance = startBalance,
+                EndBalance = account.Balance,
+                Amount = amount,
+                TransactionNo = Guid.NewGuid().ToString(),
+                Type = TransactionType.Withdraw
+            };
 
-                var userTrans = new UserTransaction()
-                {
-                    AccountId = account.Id,
-                    StartBalance = startBalance,
-                    EndBalance = account.Balance,
-                    Amount = amount,
-                    TransactionNo = Guid.NewGuid().ToString(),
-                    Type = TransactionType.Withdraw
-                };
+            account.UserTransactions.Add(userTrans);
+            //context.Accounts.Update(account);
+            context.Entry(account).State = EntityState.Modified;
 
-                account.UserTransactions.Add(userTrans);
-
-                context.Accounts.Update(account);
-                context.SaveChangesAsync();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new Exception("Your balance was modified by another user after you got the original values. Please try again!");
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
         public void Deposit(string accountNumber, decimal amount)
         {
-            lock (_lockTransaction)
+            var account = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
+            if (account == null)
             {
-                var account = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
-                if (account == null)
-                {
-                    throw new Exception("Account number does not exist!");
-                }
-                var startBalance = account.Balance;
-                account.Balance += amount;
+                throw new Exception("Account number does not exist!");
+            }
+            var startBalance = account.Balance;
+            account.Balance += amount;
 
-                var userTrans = new UserTransaction()
-                {
-                    AccountId = account.Id,
-                    StartBalance = startBalance,
-                    EndBalance = account.Balance,
-                    Amount = amount,
-                    TransactionNo = Guid.NewGuid().ToString(),
-                    Type = TransactionType.Deposit
-                };
+            var userTrans = new UserTransaction()
+            {
+                AccountId = account.Id,
+                StartBalance = startBalance,
+                EndBalance = account.Balance,
+                Amount = amount,
+                TransactionNo = Guid.NewGuid().ToString(),
+                Type = TransactionType.Deposit
+            };
 
-                account.UserTransactions.Add(userTrans);
+            account.UserTransactions.Add(userTrans);
+            //context.Accounts.Update(account);
+            context.Entry(account).State = EntityState.Modified;
 
-                context.Accounts.Update(account);
-                context.SaveChangesAsync();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new Exception("Your balance was modified by another user after you got the original values. Please try again!");
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
-
-        public void Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
+        public async void Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
         {
-            lock (_lockTransaction)
+            var accountSource = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == fromAccountNumber);
+            if (accountSource == null)
             {
-                var accountSource = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == fromAccountNumber);
-                if (accountSource == null)
-                {
-                    throw new Exception("Source account number does not exist!");
-                }
+                throw new Exception("Source account number does not exist!");
+            }
 
-                var accountDestin = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == toAccountNumber);
-                if (accountDestin == null)
-                {
-                    throw new Exception("Destination Account number does not exist!");
-                }
+            var accountDestin = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == toAccountNumber);
+            if (accountDestin == null)
+            {
+                throw new Exception("Destination Account number does not exist!");
+            }
 
-                if (accountSource.Balance < amount)
-                {
-                    throw new Exception("Balance too low.");
-                }
+            if (accountSource.Balance < amount)
+            {
+                throw new Exception("Balance too low.");
+            }
 
+            bool saveFailed = false;
+            do
+            {
                 var startBalanceSource = accountSource.Balance;
                 var startBalanceDestin = accountDestin.Balance;
                 accountSource.Balance -= amount;
@@ -131,9 +149,96 @@ namespace BankingCore
                 accountSource.UserTransactions.Add(tranAccountSource);
                 accountDestin.UserTransactions.Add(tranAccountDestin);
 
-                context.Accounts.Update(accountSource);
-                context.Accounts.Update(accountDestin);
-                context.SaveChangesAsync();
+                context.Entry(accountSource).State = EntityState.Modified;
+                context.Entry(accountDestin).State = EntityState.Modified;
+
+                try
+                {
+                    await context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+
+                    context.Entry(accountSource);
+                  var a=  context.Entry(accountDestin);
+                    saveFailed = true;
+                    //context.Entry(accountSource).State = EntityState.Unchanged;
+                    //Transfer(fromAccountNumber, toAccountNumber, amount);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            } while (saveFailed);
+           
+        }
+
+        private async void TransferProcess(string fromAccountNumber, string toAccountNumber, decimal amount, bool retry = false)
+        {
+            var accountSource = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == fromAccountNumber);
+            if (accountSource == null)
+            {
+                throw new Exception("Source account number does not exist!");
+            }
+
+            var accountDestin = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == toAccountNumber);
+            if (accountDestin == null)
+            {
+                throw new Exception("Destination Account number does not exist!");
+            }
+
+            if (accountSource.Balance < amount)
+            {
+                throw new Exception("Balance too low.");
+            }
+
+            var startBalanceSource = accountSource.Balance;
+            var startBalanceDestin = accountDestin.Balance;
+            accountSource.Balance -= amount;
+            accountDestin.Balance += amount;
+
+            var tranAccountSource = new UserTransaction()
+            {
+                AccountId = accountSource.Id,
+                StartBalance = startBalanceSource,
+                EndBalance = accountSource.Balance,
+                TransactionNo = Guid.NewGuid().ToString(),
+                Amount = amount,
+                Type = TransactionType.Withdraw
+            };
+
+            var tranAccountDestin = new UserTransaction()
+            {
+                AccountId = accountDestin.Id,
+                StartBalance = startBalanceDestin,
+                EndBalance = accountDestin.Balance,
+                TransactionNo = Guid.NewGuid().ToString(),
+                Amount = amount,
+                Type = TransactionType.Deposit
+            };
+            accountSource.UserTransactions.Add(tranAccountSource);
+            accountDestin.UserTransactions.Add(tranAccountDestin);
+
+            //context.Accounts.Update(accountSource);
+            //context.Accounts.Update(accountDestin);
+            // var bca = context.Entry(accountSource).State;
+            context.Entry(accountSource).State = EntityState.Modified;
+            context.Entry(accountSource).State = EntityState.Modified;
+
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+
+                //context.Entry(accountSource).
+                //context.Entry(accountSource).State = EntityState.Unchanged;
+                Transfer(fromAccountNumber, toAccountNumber, amount);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

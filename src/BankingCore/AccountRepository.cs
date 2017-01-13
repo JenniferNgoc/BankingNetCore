@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BankingCore
 {
-    public class AccountRepository
+    public class AccountRepository: IAccountRepository
     {
         private static readonly object _lockAccount = new object();
 
@@ -20,7 +20,7 @@ namespace BankingCore
 
         public async Task<Account> GetAccountInfo(string accountNumber)
         {
-            var account = await context.Accounts.FirstOrDefaultAsync(_ => _.AccountNumber == accountNumber);
+            var account = await context.Accounts.AsNoTracking().FirstOrDefaultAsync(_ => _.AccountNumber == accountNumber);
 
             if (account == null)
             {

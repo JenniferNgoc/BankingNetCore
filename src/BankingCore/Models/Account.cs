@@ -10,7 +10,12 @@ namespace BankingCore.Models
         public string AccountNumber { get; set; }
         public string AccountName { get; set; }
         public string Password { get; set; }
+
+        //[ConcurrencyCheck]
         public decimal Balance { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public virtual IList<UserTransaction> UserTransactions { get; set; }
     }
