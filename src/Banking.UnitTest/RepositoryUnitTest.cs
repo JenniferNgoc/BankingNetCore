@@ -1,9 +1,6 @@
 ﻿using BankingCore;
 using BankingCore.Models;
 using Microsoft.EntityFrameworkCore;
-using Moq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -59,6 +56,7 @@ namespace Banking.UnitTest
 
             Task.WaitAll(task1, task2, task3);
 
+            var sumTotal1 = new BankingContext(options).Accounts.ToList();
             var sumTotal = new BankingContext(options).Accounts.ToList().Sum(x => x.Balance);
             var sumSourceBalaceAcc = new BankingContext(options).Accounts.Where(a => a.AccountNumber != "123456").Sum(x => x.Balance);
             var balanLastAcc = new BankingContext(options).Accounts.FirstOrDefault(_ => _.AccountNumber == "123456").Balance;

@@ -132,7 +132,7 @@ namespace BankingCore
                 accountDestin.UserTransactions.Add(tranAccountDestin);
 
                 context.Accounts.Update(accountSource);
-                context.Accounts.Update(accountDestin);                
+                context.Accounts.Update(accountDestin);
                 context.SaveChangesAsync();
             }
         }
