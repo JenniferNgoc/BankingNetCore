@@ -50,9 +50,6 @@ namespace BankingAspNetCore
                 }
             });
 
-            //services.AddSingleton<IConfigurationRoot>(Configuration);
-            //services.AddSingleton<IConfiguration>(Configuration);
-
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IUserTransactionRepository, UserTransactionRepository>();
 

@@ -22,28 +22,28 @@ namespace BankingAspNetCore.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var accInfo = await accountRepo.GetAllAccountInfo(User.GetAccNo());
+            var accInfo = accountRepo.GetAllAccountInfo(User.GetAccNo());
             return View(accInfo);
         }
 
         [Authorize]
         public async Task<IActionResult> Deposit()
         {
-            var accInfo = await accountRepo.GetAccountInfo(User.GetAccNo());
+            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
             return View(accInfo);
         }
 
         [Authorize]
         public async Task<IActionResult> Withdraw()
         {
-            var accInfo = await accountRepo.GetAccountInfo(User.GetAccNo());
+            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
             return View(accInfo);
         }
 
         [Authorize]
         public async Task<IActionResult> Transfer()
         {   
-            var accInfo = await accountRepo.GetAccountInfo(User.GetAccNo());
+            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
             return View(accInfo);
         }
 
@@ -59,7 +59,7 @@ namespace BankingAspNetCore.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                var accInfo = accountRepo.GetAccountInfo(User.GetAccNo()).Result;
+                var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
                 return View(accInfo);
             }
 
@@ -78,7 +78,7 @@ namespace BankingAspNetCore.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                var accInfo = await accountRepo.GetAccountInfo(User.GetAccNo());
+                var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
                 return View(accInfo);
             }
 
@@ -97,7 +97,7 @@ namespace BankingAspNetCore.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                var accInfo = await accountRepo.GetAccountInfo(User.GetAccNo());
+                var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
                 return View(accInfo);
             }
 

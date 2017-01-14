@@ -11,7 +11,6 @@ namespace BankingCore.Models
         public string AccountName { get; set; }
         public string Password { get; set; }
 
-        //[ConcurrencyCheck]
         public decimal Balance { get; set; }
 
         [Timestamp]

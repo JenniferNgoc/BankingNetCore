@@ -8,9 +8,9 @@ namespace BankingCore
 {
     public interface IAccountRepository
     {
-        Task<Account> GetAccountInfo(string accountNumber);
-        Task<Account> GetAllAccountInfo(string accountNumber);
-        Task<bool> Authenticate(string accountNumber, string password);
+        Account GetAccountInfo(string accountNumber);
+        Account GetAllAccountInfo(string accountNumber);
+        bool Authenticate(string accountNumber, string password);
         Account CreateAccount(string accountNumber, string accountName, string password, decimal balance);
     }
 }

@@ -51,10 +51,10 @@ namespace BankingAspNetCore.Controllers
                 return View(model);
             }
 
-            var result = await accountRepo.Authenticate(model.AccountNumber, model.Password);
+            var result = accountRepo.Authenticate(model.AccountNumber, model.Password);
             if (result)
             {
-                var acc = await accountRepo.GetAccountInfo(model.AccountNumber);
+                var acc = accountRepo.GetAccountInfo(model.AccountNumber);
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, acc.AccountNumber),

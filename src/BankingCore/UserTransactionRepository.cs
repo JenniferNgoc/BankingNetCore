@@ -18,8 +18,13 @@ namespace BankingCore
             context = _context;
         }
 
-        public async void Withdraw(string accountNumber, decimal amount)
+        public void Withdraw(string accountNumber, decimal amount)
         {
+            if (amount <= 0 || string.IsNullOrEmpty(accountNumber))
+            {
+                throw new Exception("Invalid Parameter Input");
+            }
+
             var account = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
 
             if (account == null)
@@ -54,7 +59,7 @@ namespace BankingCore
 
                 try
                 {
-                    await context.SaveChangesAsync();
+                    context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -68,8 +73,13 @@ namespace BankingCore
             } while (saveFailed);
         }
 
-        public async void Deposit(string accountNumber, decimal amount)
+        public void Deposit(string accountNumber, decimal amount)
         {
+            if (amount <= 0 || string.IsNullOrEmpty(accountNumber))
+            {
+                throw new Exception("Invalid Parameter Input");
+            }
+
             var account = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
             if (account == null)
             {
@@ -98,7 +108,7 @@ namespace BankingCore
 
                 try
                 {
-                    await context.SaveChangesAsync();
+                    context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -112,28 +122,35 @@ namespace BankingCore
             } while (saveFailed);
         }
 
-        public async void Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
+        public void Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
         {
-            var accountSource = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == fromAccountNumber);
+            if (amount <= 0 || string.IsNullOrEmpty(fromAccountNumber)
+                || string.IsNullOrEmpty(toAccountNumber) || fromAccountNumber == toAccountNumber)
+            {
+                throw new Exception("Invalid Parameter Input");
+            }
+
+            var accountSource = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == fromAccountNumber);
             if (accountSource == null)
             {
                 throw new Exception("Source account number does not exist!");
             }
 
-            var accountDestin = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == toAccountNumber);
+            var accountDestin = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == toAccountNumber);
             if (accountDestin == null)
             {
                 throw new Exception("Destination Account number does not exist!");
             }
 
+            if (accountSource.Balance < amount)
+            {
+                throw new Exception("Balance too low.");
+            }
+
             bool saveFailed;
             do
             {
-                saveFailed = false;
-                if (accountSource.Balance < amount)
-                {
-                    throw new Exception("Balance too low.");
-                }
+                saveFailed = false;                
 
                 var startBalanceSource = accountSource.Balance;
                 var startBalanceDestin = accountDestin.Balance;
@@ -167,7 +184,7 @@ namespace BankingCore
 
                 try
                 {
-                    await context.SaveChangesAsync();
+                    context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {

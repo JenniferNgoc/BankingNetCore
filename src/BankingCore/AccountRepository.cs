@@ -18,9 +18,9 @@ namespace BankingCore
             context = _context;
         }
 
-        public async Task<Account> GetAccountInfo(string accountNumber)
+        public Account GetAccountInfo(string accountNumber)
         {
-            var account = await context.Accounts.AsNoTracking().FirstOrDefaultAsync(_ => _.AccountNumber == accountNumber);
+            var account =  context.Accounts.AsNoTracking().FirstOrDefault(_ => _.AccountNumber == accountNumber);
 
             if (account == null)
             {
@@ -30,9 +30,9 @@ namespace BankingCore
             return account;
         }
 
-        public async Task<Account> GetAllAccountInfo(string accountNumber)
+        public Account GetAllAccountInfo(string accountNumber)
         {
-            var account = await context.Accounts.Include(c => c.UserTransactions).FirstOrDefaultAsync(_ => _.AccountNumber == accountNumber);
+            var account = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
 
             if (account == null)
             {
@@ -42,11 +42,11 @@ namespace BankingCore
             return account;
         }
 
-        public async Task<bool> Authenticate(string accountNumber, string password)
+        public bool Authenticate(string accountNumber, string password)
         {
             var hashedPassword = StringExtensions.HashPassword(password);
         
-            var user = await context.Accounts.FirstOrDefaultAsync(usr =>
+            var user = context.Accounts.FirstOrDefault(usr =>
                             usr.AccountNumber == accountNumber &&
                             usr.Password == hashedPassword);
             if (user == null)
@@ -59,7 +59,7 @@ namespace BankingCore
         {
             lock (_lockAccount)
             {
-                var account = context.Accounts.FirstOrDefault(_ => _.AccountNumber == accountNumber);
+                var account = context.Accounts.AsNoTracking().FirstOrDefault(_ => _.AccountNumber == accountNumber);
                 if (account != null)
                 {
                     throw new Exception("Account Number is already taken!");
@@ -74,7 +74,7 @@ namespace BankingCore
                 };
 
                 context.Accounts.Add(account);
-                context.SaveChangesAsync();
+                context.SaveChanges();
                 return account;
             }
         }
