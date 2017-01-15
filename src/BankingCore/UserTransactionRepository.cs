@@ -9,8 +9,6 @@ namespace BankingCore
 {
     public class UserTransactionRepository : IUserTransactionRepository
     {
-        private static readonly object _lockTransaction = new object();
-
         private BankingContext context;
 
         public UserTransactionRepository(BankingContext _context)
@@ -25,7 +23,7 @@ namespace BankingCore
                 throw new Exception("Invalid Parameter Input");
             }
 
-            var account = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
+            var account = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
 
             if (account == null)
             {
@@ -80,7 +78,7 @@ namespace BankingCore
                 throw new Exception("Invalid Parameter Input");
             }
 
-            var account = context.Accounts.AsNoTracking().Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
+            var account = context.Accounts.Include(c => c.UserTransactions).FirstOrDefault(_ => _.AccountNumber == accountNumber);
             if (account == null)
             {
                 throw new Exception("Account number does not exist!");

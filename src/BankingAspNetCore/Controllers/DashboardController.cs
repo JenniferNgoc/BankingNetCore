@@ -32,21 +32,7 @@ namespace BankingAspNetCore.Controllers
             var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
             return View(accInfo);
         }
-
-        [Authorize]
-        public async Task<IActionResult> Withdraw()
-        {
-            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
-            return View(accInfo);
-        }
-
-        [Authorize]
-        public async Task<IActionResult> Transfer()
-        {   
-            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
-            return View(accInfo);
-        }
-
+        
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Deposit(decimal amount)
@@ -63,7 +49,14 @@ namespace BankingAspNetCore.Controllers
                 return View(accInfo);
             }
 
-            return View("~/Views/Dashboard/Complete.cshtml");
+            return View("Complete");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Withdraw()
+        {
+            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
+            return View(accInfo);
         }
 
         [HttpPost]
@@ -82,7 +75,14 @@ namespace BankingAspNetCore.Controllers
                 return View(accInfo);
             }
 
-            return View("~/Views/Dashboard/Complete.cshtml");
+            return View("Complete");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Transfer()
+        {
+            var accInfo = accountRepo.GetAccountInfo(User.GetAccNo());
+            return View(accInfo);
         }
 
         [HttpPost]
@@ -101,7 +101,7 @@ namespace BankingAspNetCore.Controllers
                 return View(accInfo);
             }
 
-            return View("~/Views/Dashboard/Complete.cshtml");
+            return View("Complete");
         }
     }
 }
